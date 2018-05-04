@@ -42,6 +42,7 @@
       .left{
         margin-right:92px;
         li{
+          cursor:pointer;
           float:left;
           height:30px;
           line-height: 30px;
@@ -248,26 +249,15 @@
         </ul>
       </div>
     </div>
-    <router-view></router-view>
+    <router-view @reload="reload"></router-view>
   </div>
 </template>
 <script>
-//  import storageData from '@/data/storage'
   import eChart from 'echarts'
-  let getItem=localStorage.getItem("target");
-let storageData=null;
-if(getItem===null){
-  storageData={
-    "readItemList":0,
-    "storage":[]
-  }
-}else{
-  storageData=getItem.storage
-}
   export default {
     data () {
       return {
-        storageData: storageData,
+        storageData:null,
         readNum:9999,
       }
     },
@@ -277,9 +267,18 @@ if(getItem===null){
     methods:{
       upData (num) {
         this.readNum=num;
+      },
+      reload () {
+        let getItem=JSON.parse(localStorage.getItem("target"));
+        if(getItem===null){
+          this.storageData=[]
+        }else{
+          this.storageData=getItem.storage
+        }
       }
     },
     mounted () {
+      this.reload();
       let myChart = eChart.init(document.getElementById('chart'));
       myChart.setOption({
         // title: { text: 'ECharts 入门示例' },

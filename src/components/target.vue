@@ -166,6 +166,7 @@
       }
       .tab{
         li{
+          cursor:pointer;
           background:#fff;
           border:1px solid #9a9a9a;
           height:28px;
@@ -184,6 +185,7 @@
     .tab-list{
       padding-top:10px;
       li{
+        cursor:pointer;
         margin:0 10px 10px;
         width:100px;
         color:#1f4f83;
@@ -209,9 +211,9 @@
           <input type="text" placeholder="请输入指标名称" v-model="val"/>
           <div class="search-icon" @click="searchData(val)"><img src="../assets/image/icon/search.png"></div>
         </div>
-        <router-link to="/" class="add-data-close close">
+        <a class="add-data-close close" @click="reload()">
           x
-        </router-link>
+        </a>
       </div>
       <div class="checked-target">
         <div class="checked-left">已选指标：</div>
@@ -265,7 +267,7 @@
       "storage":[]
     }
   }else{
-    storageData=getItem
+    storageData=JSON.parse(getItem)
   }
   export default {
     data () {
@@ -274,12 +276,16 @@
         detailData:clone(oriDetailData),
         val:'',
         tabIndex:0,
-        storageIndex:null,
+        storageIndex:9999,
         readItemList:storageData.readItemList,
         readFlag:false,
       }
     },
     methods:{
+      reload () {
+        this.$emit('reload');
+        this.$router.push("/");
+      },
       showList (res) {
         this.tabIndex=res;
 
@@ -310,7 +316,6 @@
         // 订阅参数储存
         if(this.storage[this.storageIndex]===undefined&&!this.readFlag){
           this.readItemList++;
-
           this.storage.push({
             list:"订阅"+this.readItemList,
             data:filterData
@@ -320,11 +325,14 @@
         }else{
           this.storage[this.storageIndex].data=filterData;
         }
-        console.log(this.storage)
-        localStorage.setItem("target",this.storage)
+        storageData={
+          "readItemList":this.readItemList,
+          "storage":this.storage
+        }
+        localStorage.setItem("target",JSON.stringify(storageData));
         // 展示指标初始数据
         this.detailData=clone(oriDetailData);
-        this.storageIndex=null;
+        this.storageIndex=99999;
         this.val='';
         this.readFlag=false;
       },
@@ -338,16 +346,22 @@
         // 如果删除的的是正在查看的订阅信息，则重置展示数据
         if(this.storageIndex===index){
           this.detailData=clone(oriDetailData);
-          this.storageIndex=null;
+          this.storageIndex=99999;
           this.readFlag=false;
         }
         if(this.storageIndex>index){
           this.storageIndex--;
         }
-        this.storage.splice(index,1)
+        this.storage.splice(index,1);
         if(this.storage.length===0){
           this.readItemList=0;
         }
+        storageData={
+          "readItemList":this.readItemList,
+          "storage":this.storage
+        }
+        localStorage.setItem("target",JSON.stringify(storageData));
+
       },
       // 数据搜索
       searchData (val) {
