@@ -268,7 +268,7 @@
         this.readNum=num;
       },
       reload () {
-        let getItem=JSON.parse(localStorage.getItem("target"))||null;
+        let getItem=JSON.parse(localStorage.getItem("target"));
         if(getItem===null){
           this.storageData=[]
         }else{

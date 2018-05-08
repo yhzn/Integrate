@@ -182,7 +182,7 @@
     },
     methods:{
       reload () {
-        let getItem=JSON.parse(localStorage.getItem("patientList"))||null;
+        let getItem=JSON.parse(localStorage.getItem("patientList"));
         if(getItem===null){
           this.storageData=[]
         }else{
