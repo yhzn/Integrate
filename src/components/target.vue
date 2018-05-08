@@ -223,7 +223,7 @@
       </div>
       <div class="read-target">
         <ul class="read-target-list clearfix" v-for="items,index in detailData">
-          <li v-for="item,sbIndex in items" v-show="item.checked">{{item.text}}<span @click="hideItem(item)">X</span></li>
+          <li v-for="item,sbIndex in items" v-show="item.checked">{{item.text}}<span @click="item.checked=false">X</span></li>
         </ul>
         <button class="sub-btn" @click="readItem()">订阅</button>
       </div>
@@ -232,12 +232,12 @@
           未选指标：
         </p>
         <ul class="tab clearfix">
-          <li :class="{active:tabIndex==0}" @click="showList(0)">1类指标</li>
-          <li :class="{active:tabIndex==1}" @click="showList(1)">2类指标</li>
-          <li :class="{active:tabIndex==2}" @click="showList(2)">3类指标</li>
+          <li :class="{active:tabIndex==0}" @click="tabIndex=0">1类指标</li>
+          <li :class="{active:tabIndex==1}" @click="tabIndex=1">2类指标</li>
+          <li :class="{active:tabIndex==2}" @click="tabIndex=2">3类指标</li>
         </ul>
         <ul class="tab-list clearfix" v-for="items,index in detailData" v-show="tabIndex==index">
-          <li v-for="item in items" v-show="!item.checked&&item.filter" @click="showItem(item)">{{item.text}}</li>
+          <li v-for="item in items" v-show="!item.checked&&item.filter" @click="item.checked=true">{{item.text}}</li>
         </ul>
       </div>
     </div>
@@ -245,20 +245,7 @@
 </template>
 <script>
   import oriDetailData from '@/data/target'
-//  import storageData from '@/data/storage'
-  let isBasic = (it) => {
-    return it === null || ( typeof it !== 'object' && typeof it !== 'array' );
-  }
-  let clone = function (it) {
-    if (isBasic(it)) {
-      return it;
-    }
-    let result = Array.isArray(it) ? [] : {};
-    for (let i in it) {
-      result[i] = clone(it[i]);
-    }
-    return result;
-  }
+  import {filterTime,clone} from '@/tool/tool'
   let storageData=null;
   let getItem=localStorage.getItem("target");
   if(getItem===null){
@@ -285,16 +272,6 @@
       reload () {
         this.$emit('reload');
         this.$router.push("/");
-      },
-      showList (res) {
-        this.tabIndex=res;
-
-      },
-      showItem (item) {
-        item.checked=true;
-      },
-      hideItem (item) {
-        item.checked=false;
       },
       readItem () {
         // 未选定指标时，禁止订阅操作
@@ -346,7 +323,7 @@
         // 如果删除的的是正在查看的订阅信息，则重置展示数据
         if(this.storageIndex===index){
           this.detailData=clone(oriDetailData);
-          this.storageIndex=99999;
+          this.storageIndex=9999;
           this.readFlag=false;
         }
         if(this.storageIndex>index){

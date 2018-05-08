@@ -7,8 +7,7 @@
   }
   .portrait {
     font-size:14px;
-    min-width:700px;
-
+    min-width:900px;
     .header{
       padding:6px 20px;
       font-size:16px;
@@ -269,7 +268,7 @@
         this.readNum=num;
       },
       reload () {
-        let getItem=JSON.parse(localStorage.getItem("target"));
+        let getItem=JSON.parse(localStorage.getItem("target"))||null;
         if(getItem===null){
           this.storageData=[]
         }else{
